@@ -24,7 +24,7 @@ const Header = () => {
   return (
     <header className="p-4 bg-gray-800 mb-4">
       <nav className="flex justify-between items-center max-w-6xl mx-auto">
-        <p className="text-white">Tokened</p>
+        <p className="text-white">Tokenized</p>
         {hasProvided && !wallet && (
           <button
             onClick={onConnect}
