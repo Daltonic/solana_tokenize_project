@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
+    "@metaplex-foundation/mpl-token-metadata": "2",
     "@reduxjs/toolkit": "1.9.6",
     "@solana/spl-token": "0.4.6",
     "@solana/wallet-adapter-base": "0.9.23",
@@ -59,6 +60,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
+    "esrun": "3.2.26",
     "husky": "8.0.3",
     "lint-staged": "15.2.0",
     "typechain": "^8.3.1"
