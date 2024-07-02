@@ -1,8 +1,29 @@
 import bs58 from 'bs58'
-import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js'
+import { Connection, Keypair, PublicKey, Transaction, clusterApiUrl } from '@solana/web3.js'
+import {
+  createAssociatedTokenAccountInstruction,
+  createMintToInstruction,
+  getAssociatedTokenAddress,
+  mintTo,
+} from '@solana/spl-token'
 
 let provider: any
 let tx: any
+let hasProvider: boolean
+
+const TOKEN_OWNER = process.env.NEXT_PUBLIC_TOKEN_OWNER_KEY_PAIR || ''
+const TOKEN_MINT_ADDRESS = process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS || ''
+
+if (!TOKEN_OWNER) {
+  console.log(`Please provide a TOKEN OWNER KEYPAIR`)
+}
+
+if (!TOKEN_MINT_ADDRESS) {
+  console.log(`Please provide a TOKEN MINT ADDRESS`)
+}
+
+const ownerArray = Uint8Array.from(TOKEN_OWNER.split(',').map(Number))
+const OWNER: Keypair = Keypair.fromSecretKey(ownerArray)
 
 export interface TruncateParams {
   text: string
@@ -18,7 +39,13 @@ export type MintHistoryItem = {
   transactionLink: string
 }
 
-if (typeof window !== 'undefined') provider = (window as any).phantom?.solana
+if (typeof window !== 'undefined') {
+  provider = (window as any).phantom?.solana
+  hasProvider = true
+} else {
+  provider = null
+  hasProvider = false
+}
 
 const getProvider = (): boolean => {
   return provider?.isPhantom
@@ -34,9 +61,17 @@ const autoConnect = async (): Promise<string> => {
     tx = await provider.connect({ onlyIfTrusted: true })
     return Promise.resolve(tx.publicKey.toString())
   } catch (error) {
-    console.error('Failed to auto connect:', error)
-    throw error // Rethrow the error to be caught by the caller
+    console.error('Connection attempt failed:', error)
+    return Promise.resolve('')
   }
+}
+
+const changeAccount = async () => {
+  await provider.on('accountChanged', (publicKey: PublicKey) => {
+    if (publicKey) {
+      console.log(`Switched to account ${publicKey.toBase58()}`)
+    }
+  })
 }
 
 const getWallet = (): string => {
@@ -57,9 +92,67 @@ const connectWallet = async (): Promise<string> => {
   }
 }
 
+const mintToken = async (amount: number) => {
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
+  const mintPublicKey = new PublicKey(TOKEN_MINT_ADDRESS)
+
+  const ata = await getAssociatedTokenAddress(mintPublicKey, provider.publicKey)
+  const ataInfo = await connection.getAccountInfo(ata)
+
+  if (!ataInfo) {
+    const transactions = []
+    let tx = new Transaction().add(
+      createAssociatedTokenAccountInstruction(
+        provider.publicKey, // Payer
+        ata, // ATA address
+        provider.publicKey, // Owner
+        mintPublicKey // Mint
+      )
+    )
+    transactions.push(tx)
+
+    tx = new Transaction().add(
+      createMintToInstruction(mintPublicKey, ata, OWNER.publicKey, amount * Math.pow(10, 2))
+    )
+
+    transactions.push(tx)
+
+    const blockhash = (await connection.getLatestBlockhash('finalized')).blockhash
+    tx.recentBlockhash = blockhash
+    tx.feePayer = provider.publicKey
+
+    try {
+      const { signatures } = await provider.signAndSendAllTransactions(transactions)
+      await connection.getSignatureStatuses(signatures)
+      console.log('Transactions completed:', signatures)
+    } catch (error) {
+      console.error('Transactions failed:', error)
+    }
+  } else {
+    // Create a new transaction
+    tx = new Transaction().add(
+      createMintToInstruction(mintPublicKey, ata, OWNER.publicKey, amount * Math.pow(10, 2))
+    )
+
+    const blockhash = (await connection.getLatestBlockhash('finalized')).blockhash
+    tx.recentBlockhash = blockhash
+    tx.feePayer = provider.publicKey
+
+    try {
+      // Sign the transaction
+      const signedTransaction = await provider.signTransaction(tx)
+      const signature = await connection.sendRawTransaction(signedTransaction.serialize())
+      await connection.confirmTransaction(signature)
+      console.log('Transaction successful with signature:', signature)
+    } catch (error) {
+      console.error('Transaction failed:', error)
+    }
+  }
+}
+
 const fetchMintHistory = async () => {
   const connection = new Connection(clusterApiUrl('devnet'))
-  const mintPublicKey = new PublicKey('VngJvuAUsRYnjLLQi3jZzQpFSaFbKCdxBQxinKjA2rL')
+  const mintPublicKey = new PublicKey(TOKEN_MINT_ADDRESS)
 
   // Fetch transaction signatures
   const signatures = await connection.getSignaturesForAddress(mintPublicKey, { limit: 10 })
@@ -140,4 +233,13 @@ const truncate = ({ text, startChars, endChars, maxLength }: TruncateParams): st
   return text
 }
 
-export { getProvider, connectWallet, getWallet, truncate, autoConnect, fetchMintHistory }
+export {
+  getProvider,
+  connectWallet,
+  getWallet,
+  truncate,
+  autoConnect,
+  fetchMintHistory,
+  mintToken,
+  hasProvider,
+}
