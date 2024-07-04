@@ -6,7 +6,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa'
 const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
   return (
     <div>
-      <h1 className="text-lg font-bold text-gray-700">Recently Minted</h1>
+      <h1 className="text-lg font-bold text-gray-700">Recently Purchased</h1>
       <ul className="mt-2 text-gray-500">
         {mintHistory.map((minter, i) => (
           <li key={i} className="mb-2 flex justify-between items-center">

@@ -17,7 +17,8 @@
     "export": "next build && next export",
     "lint": "next lint",
     "format": "prettier --ignore-path .gitignore \"pages/**/*.+(ts|js|tsx)\" --write",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "launch": "npx esrun ./scripts/1_deploy.ts && npx esrun ./scripts/2_ata.ts && npx esrun ./scripts/3_metadata.ts && npx esrun ./scripts/4_mint.ts && npx esrun ./scripts/5_disable.ts"
   },
   "lint-staged": {
     "./src/**/*.{ts,js,jsx,tsx}": [

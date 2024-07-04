@@ -69,8 +69,14 @@ const getTokenBalance = async (
     ASSOCIATED_TOKEN_PROGRAM_ID
   )
 
-  const accountInfo = await connection.getTokenAccountBalance(ata)
-  return accountInfo.value.uiAmount || 0
+  const accountInfo = await connection.getAccountInfo(ata)
+  if (!accountInfo) {
+    // If the account does not exist, return a balance of 0
+    return 0
+  }
+
+  const tokenAccountBalance = await connection.getTokenAccountBalance(ata)
+  return tokenAccountBalance.value.uiAmount || 0
 }
 
 const addSolTransferInstruction = (

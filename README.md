@@ -1,48 +1,102 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/26466516/107675802-36216b80-6c77-11eb-8db1-4d3407dc53d9.png" alt="Next.js and TypeScript">
-</p>
+![Tokenizer](./screenshots/0.png)
 
-<p align="center">
-  <img src="https://img.shields.io/static/v1?label=PRs&message=welcome&style=for-the-badge&color=24B36B&labelColor=000000" alt="PRs welcome!" />
+# Tokenizer
 
-  <img alt="License" src="https://img.shields.io/github/license/chhpt/typescript-nextjs-starter?style=for-the-badge&color=24B36B&labelColor=000000">
+This project is a Token Sale dApp that allows one to buy tokens and also displays recently minted tokens on the Solana blockchain using the SPL SDK. It provides a user-friendly interface to view minting transactions, including the receiver's address, the amount of tokens minted, and links to the transaction and address on the Solana explorer.
 
-  <a href="https://twitter.com/intent/follow?screen_name=cwuyiqing">
-    <img src="https://img.shields.io/twitter/follow/cwuyiqing?style=for-the-badge&color=24B36B&labelColor=000000" alt="Follow @chhpt" />
-  </a>
-</p>
+## Features
 
-<br>
+- Allows users to buy tokens
+- Display a list of recently minted tokens
+- Show receiver's address and amount of tokens minted
+- Provide links to transaction and address on Solana explorer
+
+## Technologies Used
+
+- React
+- Next.js
+- TypeScript
+- Solana Web3.js
+- SPL Token
+- React Icons
+- Redux Toolkit
+- Tailwind CSS
+- Solana Wallet Adapter
+- Phantom
+
+## Caveat
+
+**Warning:** Before using this dApp, ensure that you have the Phantom wallet installed on your browser. The dApp requires the Phantom wallet for interacting with the Solana blockchain. You can download and install the Phantom wallet from [here](https://phantom.app/).
+
+## Important Note
+
+Before running the project, ensure that your default Solana cluster is set to `devnet`. This is crucial for testing and development purposes. If you intend to deploy this project to `mainnet` or `testnet`, make sure to update your configuration accordingly. You can set the cluster by configuring your Solana CLI or by setting the appropriate environment variables in your project.
+
+To set your default Solana cluster to `devnet`, you can use the following command: 
+  ```bash
+  solana config set --url https://api.devnet.solana.com
+  ```
 
 
-# Hardhat-Tailwind-NextJs Ethers Starter Kit
-Speedily develope your decentralized application with this NextJs starter kit for free. It has Redux-Toolkit, NextJs 13, React 18, Hardhat, EthersJs, Tailwind, etc.
+## Installation
 
-Follow the steps below to download, install, and run this project.
+To get started with the project, follow these steps:
 
-## Dependencies
-Install these prerequisites to follow along with the tutorial. See free video tutorial or a full explanation of each prerequisite.
-- NPM: https://nodejs.org
-- Hardhat: https://hardhat.org/
-- EthersJs: https://ethers.org/
-- Tailwind CSS: https://tailwindcss.com/
+1. **Clone the repository:**
 
+   ```bash
+   git clone https://github.com/Daltonic/solana_tokenize_project
+   cd solana_tokenize_project
+   ```
 
-## Step 1. Clone the project
-`git clone https://github.com/Daltonic/hardhat_ethersjs_next_starter_app <PROJECT NAME>`
+2. **Install dependencies:**
 
-## Step 2. Install dependencies
-```sh
-$ cd <PROJECT NAME>
-$ yarn install # or npm install
-```
-## Step 3. Start Hardhat Node
-Open the terminal and run the command below.
-```sh
-$ yarn hardhat node
-```
+   ```bash  
+   npm install
+   ```
 
-## Step 4. Run the Front End Application
-`$ yarn dev`
-Visit this URL in your browser: http://localhost:3000
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory and add the keypair of the mint authority, that is the deployer of this token.
 
+   ```env
+   NEXT_PUBLIC_TOKEN_OWNER_KEY_PAIR=<A_STRING_OF_TOKEN_OWNER_KEY_PAIR>
+   ```
+
+4. **Run the following scripts on after the other:**
+
+   ```bash
+   npm run launch
+   ```
+
+5. **Run the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   npm start
+   ```
+
+## Usage
+
+Once the development server is running, you can access the dApp by navigating to `http://localhost:3000` in your web browser. The dashboard will display a list of recently minted tokens, including the receiver's address, the amount of tokens minted, and links to the transaction and address on the Solana explorer.
+
+## Project Structure
+
+- `components/`: Contains React components used in the project
+  - `MintHistory.tsx`: Component to display the mint history
+- `services/`: Contains service functions for interacting with the Solana blockchain
+  - `blockchain.ts`: Functions for fetching mint history, buying tokens, and getting token balance
+- `utils/`: Contains utility types and functions
+  - `types.dt.ts`: Type definitions for the project
+
+## Contributing
+
+Contributions are welcome! If you have any suggestions or improvements, please create an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
