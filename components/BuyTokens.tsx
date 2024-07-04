@@ -49,7 +49,7 @@ const BuyTokens = () => {
           const balance = await getTokenBalance(connection, TOKEN_MINT_ADDRESS, publicKey)
           dispatch(setBalance(balance))
 
-          const history = await fetchMintHistory(connection, TOKEN_MINT_ADDRESS)
+          const history = await fetchMintHistory(connection, publicKey || OWNER.publicKey)
           dispatch(setMintHistory(history))
 
           console.log(`Transaction signature: ${signature}`)

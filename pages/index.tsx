@@ -30,7 +30,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const history = await fetchMintHistory(connection, OWNER.publicKey)
+      const history = await fetchMintHistory(connection, publicKey || OWNER.publicKey)
       dispatch(setMintHistory(history))
       if (publicKey) {
         const balance = await getTokenBalance(connection, TOKEN_MINT_ADDRESS, publicKey)
