@@ -4,27 +4,23 @@ import Header from '@/components/Header'
 import MintHistory from '@/components/MintHistory'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import { RootState } from '@/utils/types.dt'
-import { useDispatch, useSelector } from 'react-redux'
-import { globalActions } from '@/store/globalSlice'
 import data from '@/utils/data.json'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
-  const { mintHistory, balance } = useSelector((states: RootState) => states.globalStates)
-  const dispatch = useDispatch()
-  const { setMintHistory, setBalance } = globalActions
+  const [balance, setBalance] = useState(0)
+  const [mintHistory, setMintHistory] = useState([])
 
   useEffect(() => {
     fetchData()
-  }, [dispatch, setMintHistory])
+  }, [])
 
   const fetchData = async () => {
-    const history = data
-    dispatch(setMintHistory(history))
+    const history: any = data
+    setMintHistory(history)
 
     const balance = 0
-    dispatch(setBalance(balance))
+    setBalance(balance)
     setIsLoading(false)
   }
 
