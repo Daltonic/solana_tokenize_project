@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react'
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
-
 const Header = () => {
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
   return (
     <header className="p-4 bg-gray-800 mb-4">
       <nav className="flex justify-between items-center max-w-6xl mx-auto">
         <p className="text-white">Tokenized</p>
-        {isMounted && <WalletMultiButton style={{ backgroundColor: '#F97316', color: 'white' }} />}
+        <button
+          className="border-none text-white cursor-pointer
+        flex items-center font-sans font-semibold text-lg h-12
+        leading-12 px-6 rounded-md bg-orange-500"
+        >
+          Connect Wallet
+        </button>
       </nav>
     </header>
   )
