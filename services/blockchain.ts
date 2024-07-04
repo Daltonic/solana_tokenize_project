@@ -118,9 +118,9 @@ const addTokenTransferInstruction = (
   return transferInstruction
 }
 
-const fetchMintHistory = async (connection: Connection, mintPublicKey: PublicKey) => {
+const fetchMintHistory = async (connection: Connection, ownerPublicKey: PublicKey) => {
   // Fetch transaction signatures
-  const signatures = await connection.getSignaturesForAddress(mintPublicKey, { limit: 10 })
+  const signatures = await connection.getSignaturesForAddress(ownerPublicKey, { limit: 10 })
 
   // Filter and fetch transactions
   const transactions = await Promise.all(
@@ -133,13 +133,20 @@ const fetchMintHistory = async (connection: Connection, mintPublicKey: PublicKey
     )
   )
 
-  // Filter for mint transactions
+  // Filter for mint and transfer transactions
   const mintDetails = transactions
     .map((tx: any) => {
       const message: any = tx?.transaction.message
       const instructions = message.instructions
       const accounts = message.accountKeys
       const signatures = tx?.transaction.signatures || []
+
+      // Determine the cluster from the connection endpoint
+      const cluster = connection.rpcEndpoint.includes('devnet')
+        ? 'devnet'
+        : connection.rpcEndpoint.includes('testnet')
+        ? 'testnet'
+        : 'mainnet'
 
       const relevantInstruction = instructions.find(
         (instr: any) =>
@@ -152,9 +159,16 @@ const fetchMintHistory = async (connection: Connection, mintPublicKey: PublicKey
         const receiverIndex = relevantInstruction.accounts[1] // Assuming the receiver is the second account in the accounts array
         const receiver = accounts[receiverIndex].toString()
         const amount = decodeAmount(relevantInstruction.data)
-        const transactionLink = `https://explorer.solana.com/tx/${signatures[0]}?cluster=devnet`
+        const transactionLink = `https://explorer.solana.com/tx/${signatures[0]}?cluster=${cluster}`
+        const addressLink = `https://explorer.solana.com/address/${receiver}?cluster=${cluster}`
 
-        return { receiver, amount: amount / 100, signature: signatures[0], transactionLink }
+        return {
+          receiver,
+          amount: amount / 100,
+          signature: signatures[0],
+          transactionLink,
+          addressLink,
+        }
       }
 
       return null

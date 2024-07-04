@@ -10,6 +10,7 @@ export type MintHistoryItem = {
   amount: number
   signature: string
   transactionLink: string
+  addressLink: string
 }
 
 export interface GlobalState {

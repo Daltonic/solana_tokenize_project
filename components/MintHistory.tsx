@@ -11,9 +11,14 @@ const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
         {mintHistory.map((minter, i) => (
           <li key={i} className="mb-2 flex justify-between items-center">
             <div className="text-sm">
-              <span className="font-bold">
+              <Link
+                href={minter.addressLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold hover:text-orange-500"
+              >
                 {truncate({ text: minter.receiver, startChars: 4, endChars: 4, maxLength: 11 })}
-              </span>{' '}
+              </Link>{' '}
               - <span>{minter.amount} DMA</span>
             </div>
 
