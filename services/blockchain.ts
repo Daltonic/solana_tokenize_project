@@ -6,7 +6,6 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  clusterApiUrl,
 } from '@solana/web3.js'
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -16,8 +15,6 @@ import {
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
 import { MintHistoryItem, TruncateParams } from '@/utils/types.dt'
-
-
 
 const buyToken = async (
   connection: Connection,
@@ -57,6 +54,23 @@ const buyToken = async (
   transaction.add(addTokenTransferInstruction(senderATA, receiverATA, OWNER.publicKey, amount))
 
   return transaction
+}
+
+const getTokenBalance = async (
+  connection: Connection,
+  mintPubKey: PublicKey,
+  recipientPubKey: PublicKey
+): Promise<number> => {
+  const ata = await getAssociatedTokenAddress(
+    mintPubKey,
+    recipientPubKey,
+    false,
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  )
+
+  const accountInfo = await connection.getTokenAccountBalance(ata)
+  return accountInfo.value.uiAmount || 0
 }
 
 const addSolTransferInstruction = (
@@ -186,4 +200,4 @@ const truncate = ({ text, startChars, endChars, maxLength }: TruncateParams): st
   return text
 }
 
-export { truncate, fetchMintHistory, buyToken }
+export { truncate, fetchMintHistory, buyToken, getTokenBalance }

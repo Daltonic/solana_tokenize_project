@@ -14,6 +14,7 @@ export type MintHistoryItem = {
 
 export interface GlobalState {
   mintHistory: MintHistoryItem[]
+  balance: number
 }
 
 export interface RootState {
