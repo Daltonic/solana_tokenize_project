@@ -15,3 +15,7 @@ export type MintHistoryItem = {
 export interface GlobalState {
   mintHistory: MintHistoryItem[]
 }
+
+export interface RootState {
+  globalStates: GlobalState
+}

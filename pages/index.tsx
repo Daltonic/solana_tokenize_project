@@ -3,21 +3,31 @@ import BuyTokens from '@/components/BuyTokens'
 import Header from '@/components/Header'
 import MintHistory from '@/components/MintHistory'
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { fetchMintHistory } from '@/services/blockchain'
 import address from '@/services/tokenMint.json'
 import { PublicKey } from '@solana/web3.js'
 import { useConnection } from '@solana/wallet-adapter-react'
-import { MintHistoryItem } from '@/utils/types.dt'
+import { RootState } from '@/utils/types.dt'
+import { useDispatch, useSelector } from 'react-redux'
+import { globalActions } from '@/store/globalSlice'
 
 export default function Home() {
   const { connection } = useConnection()
-  const [mintHistory, setMintHistory] = useState<MintHistoryItem[]>([])
   const TOKEN_MINT_ADDRESS = new PublicKey(address.address) || ''
 
+  const { mintHistory } = useSelector((states: RootState) => states.globalStates)
+  const dispatch = useDispatch()
+  const { setMintHistory } = globalActions
+
   useEffect(() => {
-    fetchMintHistory(connection, TOKEN_MINT_ADDRESS).then((history) => setMintHistory(history))
-  }, [])
+    const fetchData = async () => {
+      const history = await fetchMintHistory(connection, TOKEN_MINT_ADDRESS)
+      dispatch(setMintHistory(history))
+    }
+
+    fetchData()
+  }, [dispatch, setMintHistory])
 
   return (
     <>
@@ -34,7 +44,7 @@ export default function Home() {
         <main className="max-w-lg mx-auto p-4 space-y-4">
           <BuyTokens />
           <Balance />
-          <MintHistory mintHistory={mintHistory} />
+          {mintHistory.length > 0 && <MintHistory mintHistory={mintHistory} />}
         </main>
       </div>
     </>
