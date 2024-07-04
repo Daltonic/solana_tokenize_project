@@ -45,18 +45,31 @@ const createToken = async (): Promise<void> => {
   console.log(`✅ Finished! Created token mint: ${tokenMint.toString()}`)
 
   // Write token mint to a file
-  const filePath = path.join(__dirname, 'tokenMint.txt')
-  fs.writeFileSync(filePath, tokenMint.toString())
-  console.log(`✅ Token mint address written to ${filePath}`)
+  const address = JSON.stringify(
+    {
+      address: tokenMint.toString(),
+    },
+    null,
+    4
+  )
+
+  fs.writeFile('./services/tokenMint.json', address, 'utf8', (error) => {
+    if (error) {
+      console.error('Error saving tokenMint address:', error)
+    } else {
+      console.log('Deployed tokenMint address:', address)
+    }
+  })
 }
 
-const getTokenMintFromFile = (): PublicKey => {
-  const filePath = path.join(__dirname, 'tokenMint.txt')
+export const getTokenMintFromFile = (): PublicKey => {
+  const filePath = path.join(__dirname, 'tokenMint.json')
   if (!fs.existsSync(filePath)) {
     throw new Error('Token mint file not found')
   }
   const tokenMintString = fs.readFileSync(filePath, 'utf8')
-  return new PublicKey(tokenMintString)
+  const tokenMint = JSON.parse(tokenMintString)
+  return new PublicKey(tokenMint.address)
 }
 
 const getOrCreateATA = async (tokenMint: PublicKey): Promise<PublicKey> => {
@@ -75,7 +88,7 @@ const getOrCreateATA = async (tokenMint: PublicKey): Promise<PublicKey> => {
   }
 }
 
-const mintTokensAndDisableMintAuthority = async (
+const mintTokens = async (
   tokenMint: PublicKey,
   ownerTokenAccountAddress: PublicKey
 ): Promise<void> => {
@@ -89,7 +102,9 @@ const mintTokensAndDisableMintAuthority = async (
   )
 
   console.log(`✅ Finished! Minted tokens to owner: ${ownerTokenAccountAddress.toString()}`)
+}
 
+const disableMintAuthority = async (tokenMint: PublicKey): Promise<void> => {
   const signer = await setAuthority(
     connection,
     OWNER,
@@ -151,17 +166,21 @@ const setupTokenMetadata = async (tokenMint: PublicKey) => {
 
 const main = async () => {
   //   step 1
-  //   await createToken()
-  const tokenMint = getTokenMintFromFile()
+    // await createToken()
+//   const tokenMint = getTokenMintFromFile()
 
   //   step 2
-  const ata = await getOrCreateATA(tokenMint)
+//   const ata = await getOrCreateATA(tokenMint)
 
   //   step 3
   //   await setupTokenMetadata(tokenMint)
 
   //   step 4
-  await mintTokensAndDisableMintAuthority(tokenMint, ata)
+  //   await mintTokens(tokenMint, ata)
+
+  //   step 5
+  //   await disableMintAuthority(tokenMint)
+
   console.log(`✅ Finished! Deployment complete!`)
 }
 

@@ -1,29 +1,20 @@
 import bs58 from 'bs58'
-import { Connection, Keypair, PublicKey, Transaction, clusterApiUrl } from '@solana/web3.js'
 import {
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  clusterApiUrl,
+} from '@solana/web3.js'
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
-  createMintToInstruction,
+  createTransferInstruction,
   getAssociatedTokenAddress,
-  mintTo,
 } from '@solana/spl-token'
-
-let provider: any
-let tx: any
-let hasProvider: boolean
-
-const TOKEN_OWNER = process.env.NEXT_PUBLIC_TOKEN_OWNER_KEY_PAIR || ''
-const TOKEN_MINT_ADDRESS = process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS || ''
-
-if (!TOKEN_OWNER) {
-  console.log(`Please provide a TOKEN OWNER KEYPAIR`)
-}
-
-if (!TOKEN_MINT_ADDRESS) {
-  console.log(`Please provide a TOKEN MINT ADDRESS`)
-}
-
-const ownerArray = Uint8Array.from(TOKEN_OWNER.split(',').map(Number))
-const OWNER: Keypair = Keypair.fromSecretKey(ownerArray)
 
 export interface TruncateParams {
   text: string
@@ -39,121 +30,92 @@ export type MintHistoryItem = {
   transactionLink: string
 }
 
-if (typeof window !== 'undefined') {
-  provider = (window as any).phantom?.solana
-  hasProvider = true
-} else {
-  provider = null
-  hasProvider = false
-}
+const buyToken = async (
+  connection: Connection,
+  mintPubKey: PublicKey,
+  OWNER: Keypair,
+  recipientPubKey: PublicKey,
+  amount: number,
+  mintCost: number
+): Promise<Transaction> => {
+  const transaction = new Transaction()
+  transaction.feePayer = recipientPubKey
 
-const getProvider = (): boolean => {
-  return provider?.isPhantom
-}
+  const receiverATA = await getAssociatedTokenAddress(
+    mintPubKey,
+    recipientPubKey,
+    false,
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  )
 
-const autoConnect = async (): Promise<string> => {
-  if (!provider) {
-    reportError('Please install a browser provider')
-    throw new Error('Browser provider not installed') // Throwing an error instead of rejecting the promise
+  const senderATA = await getAssociatedTokenAddress(
+    mintPubKey,
+    OWNER.publicKey,
+    false,
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  )
+
+  transaction.add(addSolTransferInstruction(recipientPubKey, OWNER.publicKey, amount, mintCost))
+
+  const accountInfo = await connection.getAccountInfo(receiverATA)
+  if (!accountInfo) {
+    console.log(`Will include fee for creating ${receiverATA.toBase58()} ATA`)
+    transaction.add(addCreateATAInstruction(recipientPubKey, receiverATA, mintPubKey))
   }
 
-  try {
-    tx = await provider.connect({ onlyIfTrusted: true })
-    return Promise.resolve(tx.publicKey.toString())
-  } catch (error) {
-    console.error('Connection attempt failed:', error)
-    return Promise.resolve('')
-  }
+  transaction.add(addTokenTransferInstruction(senderATA, receiverATA, OWNER.publicKey, amount))
+
+  return transaction
 }
 
-const changeAccount = async () => {
-  await provider.on('accountChanged', (publicKey: PublicKey) => {
-    if (publicKey) {
-      console.log(`Switched to account ${publicKey.toBase58()}`)
-    }
+const addSolTransferInstruction = (
+  fromPubkey: PublicKey,
+  toPubkey: PublicKey,
+  amount: number,
+  mintCost: number
+) => {
+  const solTransferInstruction = SystemProgram.transfer({
+    fromPubkey,
+    toPubkey,
+    lamports: mintCost * amount * LAMPORTS_PER_SOL,
   })
+  return solTransferInstruction
 }
 
-const getWallet = (): string => {
-  return provider.isConnected ? provider.publicKey.toString() : ''
+const addCreateATAInstruction = (
+  payer: PublicKey,
+  ataAddress: PublicKey,
+  mintPubKey: PublicKey
+) => {
+  const createATAInstruction = createAssociatedTokenAccountInstruction(
+    payer,
+    ataAddress,
+    payer,
+    mintPubKey
+  )
+  return createATAInstruction
 }
 
-const connectWallet = async (): Promise<string> => {
-  if (!provider) {
-    reportError('Please install a browser provider')
-    return Promise.reject(new Error('Browser provider not installed'))
-  }
-
-  try {
-    tx = await provider.connect()
-    return Promise.resolve(tx.publicKey.toString())
-  } catch (error) {
-    return Promise.reject(error)
-  }
+const addTokenTransferInstruction = (
+  senderATA: PublicKey,
+  receiverATA: PublicKey,
+  ownerPubKey: PublicKey,
+  amount: number
+) => {
+  const transferInstruction = createTransferInstruction(
+    senderATA,
+    receiverATA,
+    ownerPubKey,
+    amount * Math.pow(10, 2),
+    [],
+    TOKEN_PROGRAM_ID
+  )
+  return transferInstruction
 }
 
-const mintToken = async (amount: number) => {
-  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
-  const mintPublicKey = new PublicKey(TOKEN_MINT_ADDRESS)
-
-  const ata = await getAssociatedTokenAddress(mintPublicKey, provider.publicKey)
-  const ataInfo = await connection.getAccountInfo(ata)
-
-  if (!ataInfo) {
-    const transactions = []
-    let tx = new Transaction().add(
-      createAssociatedTokenAccountInstruction(
-        provider.publicKey, // Payer
-        ata, // ATA address
-        provider.publicKey, // Owner
-        mintPublicKey // Mint
-      )
-    )
-    transactions.push(tx)
-
-    tx = new Transaction().add(
-      createMintToInstruction(mintPublicKey, ata, OWNER.publicKey, amount * Math.pow(10, 2))
-    )
-
-    transactions.push(tx)
-
-    const blockhash = (await connection.getLatestBlockhash('finalized')).blockhash
-    tx.recentBlockhash = blockhash
-    tx.feePayer = provider.publicKey
-
-    try {
-      const { signatures } = await provider.signAndSendAllTransactions(transactions)
-      await connection.getSignatureStatuses(signatures)
-      console.log('Transactions completed:', signatures)
-    } catch (error) {
-      console.error('Transactions failed:', error)
-    }
-  } else {
-    // Create a new transaction
-    tx = new Transaction().add(
-      createMintToInstruction(mintPublicKey, ata, OWNER.publicKey, amount * Math.pow(10, 2))
-    )
-
-    const blockhash = (await connection.getLatestBlockhash('finalized')).blockhash
-    tx.recentBlockhash = blockhash
-    tx.feePayer = provider.publicKey
-
-    try {
-      // Sign the transaction
-      const signedTransaction = await provider.signTransaction(tx)
-      const signature = await connection.sendRawTransaction(signedTransaction.serialize())
-      await connection.confirmTransaction(signature)
-      console.log('Transaction successful with signature:', signature)
-    } catch (error) {
-      console.error('Transaction failed:', error)
-    }
-  }
-}
-
-const fetchMintHistory = async () => {
-  const connection = new Connection(clusterApiUrl('devnet'))
-  const mintPublicKey = new PublicKey(TOKEN_MINT_ADDRESS)
-
+const fetchMintHistory = async (connection: Connection, mintPublicKey: PublicKey) => {
   // Fetch transaction signatures
   const signatures = await connection.getSignaturesForAddress(mintPublicKey, { limit: 10 })
 
@@ -176,17 +138,17 @@ const fetchMintHistory = async () => {
       const accounts = message.accountKeys
       const signatures = tx?.transaction.signatures || []
 
-      const mintInstruction = instructions.find(
+      const relevantInstruction = instructions.find(
         (instr: any) =>
           accounts[instr.programIdIndex].toString() ===
             'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' &&
-          decodeInstructionType(instr.data) === 'mintTo'
+          ['mintTo', 'transfer'].includes(decodeInstructionType(instr.data))
       )
 
-      if (mintInstruction && signatures.length > 0) {
-        const receiverIndex = mintInstruction.accounts[1] // Assuming the receiver is the second account in the accounts array
+      if (relevantInstruction && signatures.length > 0) {
+        const receiverIndex = relevantInstruction.accounts[1] // Assuming the receiver is the second account in the accounts array
         const receiver = accounts[receiverIndex].toString()
-        const amount = decodeAmount(mintInstruction.data)
+        const amount = decodeAmount(relevantInstruction.data)
         const transactionLink = `https://explorer.solana.com/tx/${signatures[0]}?cluster=devnet`
 
         return { receiver, amount: amount / 100, signature: signatures[0], transactionLink }
@@ -204,6 +166,8 @@ function decodeInstructionType(data: string): string {
   const instructionTypeCode = decodedData[0]
 
   switch (instructionTypeCode) {
+    case 3:
+      return 'transfer'
     case 7:
       return 'mintTo'
     default:
@@ -233,13 +197,4 @@ const truncate = ({ text, startChars, endChars, maxLength }: TruncateParams): st
   return text
 }
 
-export {
-  getProvider,
-  connectWallet,
-  getWallet,
-  truncate,
-  autoConnect,
-  fetchMintHistory,
-  mintToken,
-  hasProvider,
-}
+export { truncate, fetchMintHistory, buyToken }
