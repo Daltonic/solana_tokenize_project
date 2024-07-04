@@ -15,20 +15,9 @@ import {
   createTransferInstruction,
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
+import { MintHistoryItem, TruncateParams } from '@/utils/types.dt'
 
-export interface TruncateParams {
-  text: string
-  startChars: number
-  endChars: number
-  maxLength: number
-}
 
-export type MintHistoryItem = {
-  receiver: any // Consider specifying a more specific type instead of 'any'
-  amount: number
-  signature: string
-  transactionLink: string
-}
 
 const buyToken = async (
   connection: Connection,

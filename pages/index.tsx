@@ -4,10 +4,11 @@ import Header from '@/components/Header'
 import MintHistory from '@/components/MintHistory'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import { MintHistoryItem, fetchMintHistory } from '@/services/blockchain'
+import { fetchMintHistory } from '@/services/blockchain'
 import address from '@/services/tokenMint.json'
 import { PublicKey } from '@solana/web3.js'
 import { useConnection } from '@solana/wallet-adapter-react'
+import { MintHistoryItem } from '@/utils/types.dt'
 
 export default function Home() {
   const { connection } = useConnection()
