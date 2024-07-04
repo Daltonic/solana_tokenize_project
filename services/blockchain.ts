@@ -122,6 +122,13 @@ const fetchMintHistory = async (connection: Connection, ownerPublicKey: PublicKe
   // Fetch transaction signatures
   const signatures = await connection.getSignaturesForAddress(ownerPublicKey, { limit: 10 })
 
+  // Determine the cluster from the connection endpoint
+  const cluster = connection.rpcEndpoint.includes('devnet')
+    ? 'devnet'
+    : connection.rpcEndpoint.includes('testnet')
+    ? 'testnet'
+    : 'mainnet'
+
   // Filter and fetch transactions
   const transactions = await Promise.all(
     signatures.map(
@@ -140,13 +147,6 @@ const fetchMintHistory = async (connection: Connection, ownerPublicKey: PublicKe
       const instructions = message.instructions
       const accounts = message.accountKeys
       const signatures = tx?.transaction.signatures || []
-
-      // Determine the cluster from the connection endpoint
-      const cluster = connection.rpcEndpoint.includes('devnet')
-        ? 'devnet'
-        : connection.rpcEndpoint.includes('testnet')
-        ? 'testnet'
-        : 'mainnet'
 
       const relevantInstruction = instructions.find(
         (instr: any) =>

@@ -22,7 +22,12 @@ const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
               - <span>{minter.amount} DMA</span>
             </div>
 
-            <Link href={minter.transactionLink} target="_blank" rel="noopener noreferrer">
+            <Link
+              href={minter.transactionLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className=" hover:text-orange-500"
+            >
               <FaExternalLinkAlt size={12} />
             </Link>
           </li>
