@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { Connection, Keypair, clusterApiUrl } from '@solana/web3.js'
 import { createMint } from '@solana/spl-token'
-import { OWNER, checkOwner, getTokenMintFromFile } from './reused'
+import { OWNER, checkOwner, getTokenAddress } from './reuse'
 
 checkOwner()
 
@@ -34,12 +34,12 @@ const main = async () => {
 
   setTimeout(() => {
     try {
-      const tokenMint = getTokenMintFromFile()
+      const tokenMint = getTokenAddress()
       console.log(`✅ Finished! Deployment complete!`, tokenMint)
     } catch (error) {
       console.error('Error reading token mint file:', error)
     }
-  }, 1000)
+  }, 2000)
 }
 
 main()

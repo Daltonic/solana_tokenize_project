@@ -11,7 +11,7 @@ const Balance = ({ balance }: { balance: number }) => {
       </div>
       <div>
         <h1 className="text-lg font-semibold text-gray-700">Token Balance</h1>
-        <p className="text-gray-600 text-md">{balance} DMA Tokens</p>
+        <p className="text-gray-600 text-md">{balance} TKC Tokens</p>
       </div>
     </div>
   )

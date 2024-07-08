@@ -1,9 +1,12 @@
-import { truncate } from '@/services/blockchain'
-import { MintHistoryItem } from '@/utils/types.dt'
+import { SalesHistoryItem } from '@/utils/types.dt'
 import Link from 'next/link'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 
-const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
+const formatReceiver = (receiver: string) => {
+  return `${receiver.substring(0, 4)}...${receiver.substring(receiver.length - 4)}`
+}
+
+const MintHistory = ({ mintHistory }: { mintHistory: SalesHistoryItem[] }) => {
   return (
     <div>
       <h1 className="text-lg font-bold text-gray-700">Recently Purchased</h1>
@@ -17,9 +20,9 @@ const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
                 rel="noopener noreferrer"
                 className="font-bold hover:text-orange-500"
               >
-                {truncate({ text: minter.receiver, startChars: 4, endChars: 4, maxLength: 11 })}
+                {formatReceiver(minter.receiver.toString())}
               </Link>{' '}
-              - <span>{minter.amount} DMA</span>
+              - <span>{minter.amount} TKC</span>
             </div>
 
             <Link

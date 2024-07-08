@@ -1,0 +1,23 @@
+[
+    {
+        "receiver": "9JbGC6MZvB7pGqC4T4FS9tXbMcuYWWQ9DWDKfPqgLKg",
+        "amount": 500,
+        "signature": "4HkoUq5GJNz4vBjyjWFXBvTjWf4WfmxNLQKQWZzGh9hL4vGKkzjtnvUQVcTcWjUwUcTcWjUwUcTcW",
+        "transactionLink": "(link unavailable)",
+        "addressLink": "(link unavailable)"
+    },
+    {
+        "receiver": "B7yMT2GcL4DuDyL4L4L4L4L4L4L4L4L4L4L4L4L4L",
+        "amount": 2000,
+        "signature": "5E66E66E66E66E66E66E66E66E66E66E66E6",
+        "transactionLink": "(link unavailable)",
+        "addressLink": "(link unavailable)"
+    },
+    {
+        "receiver": "46UKVeLcLcX7qS7AV5Cr7eeCxmh4nmUX7ArBRr",
+        "amount": 3000,
+        "signature": "2TfGfGfGfGfGfGfGfGfGfGfGfGfGfGfGfGfG",
+        "transactionLink": "(link unavailable)",
+        "addressLink": "(link unavailable)"
+    }
+]

@@ -2,10 +2,10 @@ import { AppProps } from 'next/app'
 import '@/styles/global.css'
 import 'react-toastify/dist/ReactToastify.css'
 import 'react-loading-skeleton/dist/skeleton.css'
-import { Provider } from 'react-redux'
-import { store } from '@/store'
 import { ToastContainer } from 'react-toastify'
 import AppWalletProvider from '@/components/AppWalletProvider'
+import { Provider } from 'react-redux'
+import { store } from '@/store'
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (

@@ -7,6 +7,7 @@ import {
   SystemProgram,
   Transaction,
 } from '@solana/web3.js'
+import { SalesHistoryItem } from '@/utils/types.dt'
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -14,7 +15,6 @@ import {
   createTransferInstruction,
   getAssociatedTokenAddress,
 } from '@solana/spl-token'
-import { MintHistoryItem, TruncateParams } from '@/utils/types.dt'
 
 const buyToken = async (
   connection: Connection,
@@ -22,12 +22,12 @@ const buyToken = async (
   OWNER: Keypair,
   recipientPubKey: PublicKey,
   amount: number,
-  mintCost: number
+  salesCost: number
 ): Promise<Transaction> => {
   const transaction = new Transaction()
   transaction.feePayer = recipientPubKey
 
-  const receiverATA = await getAssociatedTokenAddress(
+  const receiverAta = await getAssociatedTokenAddress(
     mintPubKey,
     recipientPubKey,
     false,
@@ -35,7 +35,7 @@ const buyToken = async (
     ASSOCIATED_TOKEN_PROGRAM_ID
   )
 
-  const senderATA = await getAssociatedTokenAddress(
+  const senderAta = await getAssociatedTokenAddress(
     mintPubKey,
     OWNER.publicKey,
     false,
@@ -43,17 +43,54 @@ const buyToken = async (
     ASSOCIATED_TOKEN_PROGRAM_ID
   )
 
-  transaction.add(addSolTransferInstruction(recipientPubKey, OWNER.publicKey, amount, mintCost))
+  transaction.add(solanaTransferInstruction(recipientPubKey, OWNER.publicKey, amount, salesCost))
 
-  const accountInfo = await connection.getAccountInfo(receiverATA)
+  const accountInfo = await connection.getAccountInfo(receiverAta)
   if (!accountInfo) {
-    console.log(`Will include fee for creating ${receiverATA.toBase58()} ATA`)
-    transaction.add(addCreateATAInstruction(recipientPubKey, receiverATA, mintPubKey))
+    console.log(`Will include fee for creating ${receiverAta.toBase58()} ATA`)
+    transaction.add(createAtaInstruction(recipientPubKey, receiverAta, mintPubKey))
   }
 
-  transaction.add(addTokenTransferInstruction(senderATA, receiverATA, OWNER.publicKey, amount))
-
+  transaction.add(tokenTransferInstruction(senderAta, receiverAta, OWNER.publicKey, amount))
   return transaction
+}
+
+const tokenTransferInstruction = (
+  senderATA: PublicKey,
+  receiverATA: PublicKey,
+  ownerPubKey: PublicKey,
+  amount: number
+) => {
+  const instruction = createTransferInstruction(
+    senderATA,
+    receiverATA,
+    ownerPubKey,
+    amount * Math.pow(10, 2),
+    [],
+    TOKEN_PROGRAM_ID
+  )
+
+  return instruction
+}
+
+const createAtaInstruction = (payer: PublicKey, ata: PublicKey, mintPubKey: PublicKey) => {
+  const instruction = createAssociatedTokenAccountInstruction(payer, ata, payer, mintPubKey)
+  return instruction
+}
+
+const solanaTransferInstruction = (
+  fromPubkey: PublicKey,
+  toPubkey: PublicKey,
+  amount: number,
+  salesCost: number
+) => {
+  const instruction = SystemProgram.transfer({
+    fromPubkey,
+    toPubkey,
+    lamports: parseInt((salesCost * amount * LAMPORTS_PER_SOL).toString()),
+  })
+
+  return instruction
 }
 
 const getTokenBalance = async (
@@ -70,72 +107,21 @@ const getTokenBalance = async (
   )
 
   const accountInfo = await connection.getAccountInfo(ata)
-  if (!accountInfo) {
-    // If the account does not exist, return a balance of 0
-    return 0
-  }
+  if (!accountInfo) return 0
 
   const tokenAccountBalance = await connection.getTokenAccountBalance(ata)
   return tokenAccountBalance.value.uiAmount || 0
 }
 
-const addSolTransferInstruction = (
-  fromPubkey: PublicKey,
-  toPubkey: PublicKey,
-  amount: number,
-  mintCost: number
-) => {
-  const solTransferInstruction = SystemProgram.transfer({
-    fromPubkey,
-    toPubkey,
-    lamports: mintCost * amount * LAMPORTS_PER_SOL,
-  })
-  return solTransferInstruction
-}
+const fetchSalesHistory = async (connection: Connection, address: PublicKey) => {
+  const signatures = await connection.getSignaturesForAddress(address, { limit: 5 })
 
-const addCreateATAInstruction = (
-  payer: PublicKey,
-  ataAddress: PublicKey,
-  mintPubKey: PublicKey
-) => {
-  const createATAInstruction = createAssociatedTokenAccountInstruction(
-    payer,
-    ataAddress,
-    payer,
-    mintPubKey
-  )
-  return createATAInstruction
-}
-
-const addTokenTransferInstruction = (
-  senderATA: PublicKey,
-  receiverATA: PublicKey,
-  ownerPubKey: PublicKey,
-  amount: number
-) => {
-  const transferInstruction = createTransferInstruction(
-    senderATA,
-    receiverATA,
-    ownerPubKey,
-    amount * Math.pow(10, 2),
-    [],
-    TOKEN_PROGRAM_ID
-  )
-  return transferInstruction
-}
-
-const fetchMintHistory = async (connection: Connection, ownerPublicKey: PublicKey) => {
-  // Fetch transaction signatures
-  const signatures = await connection.getSignaturesForAddress(ownerPublicKey, { limit: 10 })
-
-  // Determine the cluster from the connection endpoint
   const cluster = connection.rpcEndpoint.includes('devnet')
     ? 'devnet'
     : connection.rpcEndpoint.includes('testnet')
     ? 'testnet'
     : 'mainnet'
 
-  // Filter and fetch transactions
   const transactions = await Promise.all(
     signatures.map(
       async (sig) =>
@@ -146,13 +132,12 @@ const fetchMintHistory = async (connection: Connection, ownerPublicKey: PublicKe
     )
   )
 
-  // Filter for mint and transfer transactions
-  const mintDetails = transactions
+  const salesDetails = transactions
     .map((tx: any) => {
       const message: any = tx?.transaction.message
+      const signatures = tx?.transaction.signatures || []
       const instructions = message.instructions
       const accounts = message.accountKeys
-      const signatures = tx?.transaction.signatures || []
 
       const relevantInstruction = instructions.find(
         (instr: any) =>
@@ -179,9 +164,9 @@ const fetchMintHistory = async (connection: Connection, ownerPublicKey: PublicKe
 
       return null
     })
-    .filter((detail: any) => detail !== null) as MintHistoryItem[]
+    .filter((details: any) => details !== null) as SalesHistoryItem[]
 
-  return mintDetails
+  return salesDetails
 }
 
 function decodeInstructionType(data: string): string {
@@ -208,16 +193,4 @@ function decodeAmount(data: string): number {
   return amount
 }
 
-const truncate = ({ text, startChars, endChars, maxLength }: TruncateParams): string => {
-  if (text.length > maxLength) {
-    let start = text.substring(0, startChars)
-    let end = text.substring(text.length - endChars, text.length)
-    while (start.length + end.length < maxLength) {
-      start = start + '.'
-    }
-    return start + end
-  }
-  return text
-}
-
-export { truncate, fetchMintHistory, buyToken, getTokenBalance }
+export { fetchSalesHistory, getTokenBalance, buyToken }

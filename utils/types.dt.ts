@@ -1,11 +1,4 @@
-export interface TruncateParams {
-  text: string
-  startChars: number
-  endChars: number
-  maxLength: number
-}
-
-export type MintHistoryItem = {
+export type SalesHistoryItem = {
   receiver: any // Consider specifying a more specific type instead of 'any'
   amount: number
   signature: string
@@ -14,7 +7,7 @@ export type MintHistoryItem = {
 }
 
 export interface GlobalState {
-  mintHistory: MintHistoryItem[]
+  salesHistory: SalesHistoryItem[]
   balance: number
 }
 
