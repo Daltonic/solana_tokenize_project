@@ -143,7 +143,7 @@ const fetchSalesHistory = async (connection: Connection, address: PublicKey) => 
         (instr: any) =>
           accounts[instr.programIdIndex].toString() ===
             'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' &&
-          ['mintTo', 'transfer'].includes(decodeInstructionType(instr.data))
+          ['transfer'].includes(decodeInstructionType(instr.data))
       )
 
       if (relevantInstruction && signatures.length > 0) {

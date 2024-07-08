@@ -53,7 +53,6 @@ const BuyTokens = () => {
 
           const balance = await getTokenBalance(connection, TOKEN_MINT_ADDRESS, publicKey)
           dispatch(setBalance(balance))
-
           resolve(signature as any)
         } catch (error) {
           console.error('Transaction failed:', error)

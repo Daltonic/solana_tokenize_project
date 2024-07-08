@@ -1,5 +1,4 @@
 import { useWallet } from '@solana/wallet-adapter-react'
-import React from 'react'
 import Identicon from 'react-identicons'
 
 const Balance = ({ balance }: { balance: number }) => {
