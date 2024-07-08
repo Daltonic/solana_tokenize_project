@@ -1,4 +1,4 @@
-import { MintHistoryItem } from '@/utils/types.dt'
+import { SalesHistoryItem } from '@/utils/types.dt'
 import Link from 'next/link'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 
@@ -6,7 +6,7 @@ const formatReceiver = (receiver: string) => {
   return `${receiver.substring(0, 4)}...${receiver.substring(receiver.length - 4)}`
 }
 
-const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
+const MintHistory = ({ mintHistory }: { mintHistory: SalesHistoryItem[] }) => {
   return (
     <div>
       <h1 className="text-lg font-bold text-gray-700">Recently Purchased</h1>
@@ -22,7 +22,7 @@ const MintHistory = ({ mintHistory }: { mintHistory: MintHistoryItem[] }) => {
               >
                 {formatReceiver(minter.receiver.toString())}
               </Link>{' '}
-              - <span>{minter.amount} DMA</span>
+              - <span>{minter.amount} TKC</span>
             </div>
 
             <Link

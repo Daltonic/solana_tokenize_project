@@ -496,14 +496,6 @@
     "@solana/wallet-adapter-base" "^0.9.17"
     bs58 "^5.0.0"
 
-"@headlessui/react@^1.7.17":
-  version "1.7.19"
-  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.19.tgz#91c78cf5fcb254f4a0ebe96936d48421caf75f40"
-  integrity sha512-Ll+8q3OlMJfJbAKM/+/Y2q6PPYbryqNTXDbryx7SXLIDamkF6iQFbriYHga0dY44PvDhvvBWCx1Xj4U5+G4hOw==
-  dependencies:
-    "@tanstack/react-virtual" "^3.0.0-beta.60"
-    client-only "^0.0.1"
-
 "@humanwhocodes/config-array@^0.11.10":
   version "0.11.14"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.14.tgz#d78e481a039f7566ecc9660b4ea7fe6b1fec442b"
@@ -1908,18 +1900,6 @@
   integrity sha512-YNlnKRWF2sVojTpIyzwou9XoTNbzbzONwRhOoniEioF1AtaitTvVZblaQRrAzChWQ1bLYyYSWzM18y4WwgzJ+A==
   dependencies:
     tslib "^2.4.0"
-
-"@tanstack/react-virtual@^3.0.0-beta.60":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-virtual/-/react-virtual-3.6.0.tgz#45eb57f9d8d866155f3b086cc64f155f1729a1f1"
-  integrity sha512-4n+VY/BMSo0VFoOL6ejaXpsxaKw5qdKcGO4fETvHJlRmRoXubbXWnhsULIhdYJnakZ83wdVxAzgulqY3KU8OPA==
-  dependencies:
-    "@tanstack/virtual-core" "3.6.0"
-
-"@tanstack/virtual-core@3.6.0":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.6.0.tgz#a237d698e7abf91c40c85f24435a17ef79236d87"
-  integrity sha512-hQERxVckATdWMCk7uEyq0pLaLGtQTZzgmDrpHivJZra8p3Gw3ANH5SURitYiqrBD5JUHCjwp7h7BnWU7FNkv4w==
 
 "@toruslabs/base-controllers@^2.8.0":
   version "2.9.0"
@@ -3451,7 +3431,7 @@ cli-truncate@^4.0.0:
     slice-ansi "^5.0.0"
     string-width "^7.0.0"
 
-client-only@0.0.1, client-only@^0.0.1:
+client-only@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/client-only/-/client-only-0.0.1.tgz#38bba5d403c41ab150bff64a95c85013cf73bca1"
   integrity sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==
@@ -3911,13 +3891,6 @@ doctrine@^3.0.0:
   integrity sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==
   dependencies:
     esutils "^2.0.2"
-
-dom7@^4.0.4:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/dom7/-/dom7-4.0.6.tgz#091a51621d7a19ce0fb86045cafb3c10035e97ed"
-  integrity sha512-emjdpPLhpNubapLFdjNL9tP06Sr+GZkrIHEXLWvOGsytACUrkbeIdjO5g77m00BrHTznnlcNqgmn7pCN192TBA==
-  dependencies:
-    ssr-window "^4.0.0"
 
 dotenv@16.4.5:
   version "16.4.5"
@@ -5835,11 +5808,6 @@ mlly@^1.6.1, mlly@^1.7.0:
     pkg-types "^1.1.1"
     ufo "^1.5.3"
 
-moment@^2.29.4:
-  version "2.30.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
-  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
-
 mri@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mri/-/mri-1.2.0.tgz#6721480fec2a11a4889861115a48b6cbe7cc8f0b"
@@ -6671,11 +6639,6 @@ react-modal@^3.12.1:
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
 
-react-moment@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/react-moment/-/react-moment-1.1.3.tgz#829b21dfb279aa6db47ce4f1ac2555af17a1bcdc"
-  integrity sha512-8EPvlUL8u6EknPp1ISF5MQ3wx2OHJVXIP/iZc4wRh3iV3XozftZERDv9ANZeAtMlhNNQHdFoqcZHFUkBSTONfA==
-
 react-qr-reader@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-qr-reader/-/react-qr-reader-2.2.1.tgz#dc89046d1c1a1da837a683dd970de5926817d55b"
@@ -7261,11 +7224,6 @@ sprintf-js@^1.1.3:
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.1.3.tgz#4914b903a2f8b685d17fdf78a70e917e872e444a"
   integrity sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==
 
-ssr-window@^4.0.0, ssr-window@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/ssr-window/-/ssr-window-4.0.2.tgz#dc6b3ee37be86ac0e3ddc60030f7b3bc9b8553be"
-  integrity sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==
-
 std-env@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.7.0.tgz#c9f7386ced6ecf13360b6c6c55b8aaa4ef7481d2"
@@ -7511,14 +7469,6 @@ supports-preserve-symlinks-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
-
-swiper@8.4.4:
-  version "8.4.4"
-  resolved "https://registry.yarnpkg.com/swiper/-/swiper-8.4.4.tgz#868ccad5384624e84143b469c75bc54ba004e668"
-  integrity sha512-jA/8BfOZwT8PqPSnMX0TENZYitXEhNa7ZSNj1Diqh5LZyUJoBQaZcqAiPQ/PIg1+IPaRn/V8ZYVb0nxHMh51yw==
-  dependencies:
-    dom7 "^4.0.4"
-    ssr-window "^4.0.2"
 
 system-architecture@^0.1.0:
   version "0.1.0"

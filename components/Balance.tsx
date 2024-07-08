@@ -1,16 +1,18 @@
-import React, { useState } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
+import React from 'react'
 import Identicon from 'react-identicons'
 
 const Balance = ({ balance }: { balance: number }) => {
+  const { publicKey } = useWallet()
 
   return (
     <div className="bg-white shadow-sm rounded-lg p-3 w-full flex items-center justify-start space-x-4">
       <div className="rounded-full shadow-sm overflow-hidden inline-block">
-        <Identicon string="random-string" size={40} />
+        <Identicon string={publicKey?.toString() || ''} size={40} />
       </div>
       <div>
         <h1 className="text-lg font-semibold text-gray-700">Token Balance</h1>
-        <p className="text-gray-600 text-md">{balance} DMA Tokens</p>
+        <p className="text-gray-600 text-md">{balance} TKC Tokens</p>
       </div>
     </div>
   )
