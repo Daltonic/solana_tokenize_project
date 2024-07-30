@@ -14,9 +14,9 @@ jobs:
       - name: Esure target directory exists on VPS
         uses: appleboy/ssh-action@v0.1.3
         with:
-          host: ${{ SSH_HOST }}
-          username: ${{ SSH_USERNAME }}
-          key: ${{ SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             if [ ! -d "/dockerized/containers/solana_project" ]; then
               mkdir -p /dockerized/containers/solana_project
