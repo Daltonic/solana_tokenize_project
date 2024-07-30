@@ -10,7 +10,7 @@ const Balance = ({ balance }: { balance: number }) => {
         <Identicon string={publicKey?.toString() || ''} size={40} />
       </div>
       <div>
-        <h1 className="text-lg font-semibold text-gray-700">Token Balance</h1>
+        <h1 className="text-lg font-semibold text-gray-700">Current Balance</h1>
         <p className="text-gray-600 text-md">{balance} TKC Tokens</p>
       </div>
     </div>
