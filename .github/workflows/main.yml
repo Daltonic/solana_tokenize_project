@@ -45,6 +45,7 @@ jobs:
             EOF
   
   build_docker_image:
+    needs: prepare_environment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
